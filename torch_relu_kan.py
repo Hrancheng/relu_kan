@@ -16,8 +16,10 @@ class ReLUKANLayer(nn.Module):
                                          requires_grad=train_ab)
         self.equal_size_conv = nn.Conv2d(1, output_size, (g+k, input_size))
     def forward(self, x):
-        x1 = torch.relu(x - self.phase_low)
-        x2 = torch.relu(self.phase_height - x)
+        device = x.device
+        x1 = torch.relu(x - self.phase_low.to(device))
+        x2 = torch.relu(self.phase_height.to(device) - x)
+        self.fequal_size_conv = nn.Conv2d(1, self.output_size, (self.g + self.k, self.input_size)).to(device)
         x = x1 * x2 * self.r
         x = x * x
         x = x.reshape((len(x), 1, self.g + self.k, self.input_size))
